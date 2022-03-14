@@ -70,5 +70,4 @@ const launchBirthdayNotificationScheduler = () => {
   await initDb()
   await exportFriends()
   launchBirthdayNotificationScheduler()
-  sendBirthdayNotifications()
 })()
