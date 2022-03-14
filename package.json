@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "csvtojson": "^2.0.10",
+    "dotenv": "^16.0.0",
+    "pg": "^8.7.3",
+    "sequelize": "^6.17.0"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
