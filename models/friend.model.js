@@ -1,4 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
+const postmark = require("postmark");
+const postmarkClient = new postmark.ServerClient(process.env.POSTMARK_API_KEY);
 
 module.exports = sequelize => {
   class Friend extends Model {}
@@ -29,9 +31,22 @@ module.exports = sequelize => {
   }, { sequelize, modelName: 'friend' });
 
   Friend.prototype.sendBirthdayNotification = async function () {
-    console.log(`Sending birthday notification to ${this.email}`)
+    const friend = this
 
-    // ... send via Postmark
+    console.log(`Sending birthday notification to ${friend.email}`)
+
+    try {
+      await postmarkClient.sendEmail({
+        From: process.env.POSTMARK_SENDER_EMAIL_ADDRESS,
+        To: friend.email,
+        Subject: "Happy birthday!",
+        TextBody: `Happy birthday, dear ${friend.first_name}!`
+      });
+    } catch (error) {
+      console.log(`Could not send a birthday notification to ${friend.email}, will try again next year.`)
+
+      return
+    }
     
     const currentYear = (new Date()).getFullYear()
 

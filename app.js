@@ -64,10 +64,10 @@ const sendBirthdayNotifications = async () => {
 const launchBirthdayNotificationScheduler = () => {
   cron.schedule('0 16 * * *', () => sendBirthdayNotifications())
 }
-  
 
 (async () => {
   await initDb()
   await exportFriends()
   launchBirthdayNotificationScheduler()
+  sendBirthdayNotifications()
 })()

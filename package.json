@@ -5,6 +5,7 @@
     "dotenv": "^16.0.0",
     "node-cron": "^3.0.0",
     "pg": "^8.7.3",
+    "postmark": "^3.0.1",
     "sequelize": "^6.17.0"
   },
   "scripts": {
