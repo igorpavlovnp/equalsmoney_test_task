@@ -1,6 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
-const postmark = require("postmark");
-const postmarkClient = new postmark.ServerClient(process.env.POSTMARK_API_KEY);
+const sendBirthdayEmailToFriend = require('../integrations/email_sender')
 
 module.exports = sequelize => {
   class Friend extends Model {}
@@ -35,18 +34,7 @@ module.exports = sequelize => {
 
     console.log(`Sending birthday notification to ${friend.email}`)
 
-    try {
-      await postmarkClient.sendEmail({
-        From: process.env.POSTMARK_SENDER_EMAIL_ADDRESS,
-        To: friend.email,
-        Subject: "Happy birthday!",
-        TextBody: `Happy birthday, dear ${friend.first_name}!`
-      });
-    } catch (error) {
-      console.log(`Could not send a birthday notification to ${friend.email}, will try again next year.`)
-
-      return
-    }
+    sendBirthdayEmailToFriend(friend)
     
     const currentYear = (new Date()).getFullYear()
 
