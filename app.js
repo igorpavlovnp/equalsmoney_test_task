@@ -44,17 +44,29 @@ const exportFriends = async () => {
 
 const sendBirthdayNotifications = async () => {
   const dateNow = new Date()
-  const friendsToSendNotificationsTo = await Friend.findAll({
-    where: {
-      day_of_birth: dateNow.getDate(),
-      month_of_birth: dateNow.getMonth(),
-      notification_sent_for_year: {
-        [Op.or]: {
-          [Op.eq]: null,
-          [Op.lt]: dateNow.getFullYear()
-        }
+  const monthNow = dateNow.getMonth()
+  const dayNow = dateNow.getDate()
+  const isFebruary = monthNow === 1
+  const isFebruary28th = isFebruary && dayNow === 28
+  const friendsWithBirthdayQuery = {
+    day_of_birth: dateNow.getDate(),
+    month_of_birth: dateNow.getMonth(),
+    notification_sent_for_year: {
+      [Op.or]: {
+        [Op.eq]: null,
+        [Op.lt]: dateNow.getFullYear()
       }
     }
+  }
+
+  if (isFebruary28th) {
+    friendsWithBirthdayQuery.day_of_birth = {
+      [Op.in]: [28, 29]
+    }
+  }
+
+  const friendsToSendNotificationsTo = await Friend.findAll({
+    where: friendsWithBirthdayQuery
   })
 
   for (const friendToSendNotificationsTo of friendsToSendNotificationsTo) {
