@@ -9,4 +9,8 @@ This app sends birthday notifications to your friends. You can add them in the C
 
 # Run
 
-Run `yarn start` on `npm start`
+Run `yarn start` or `npm start`
+
+# Test
+
+Run `yarn test`
