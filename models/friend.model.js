@@ -27,6 +27,12 @@ module.exports = sequelize => {
     notification_sent_for_year: {
       type: DataTypes.INTEGER,
     },
+    phone_number: {
+      type: DataTypes.STRING,
+      validate: {
+        is: /^\+[\d\s]+$/i
+      }
+    },
   }, { sequelize, modelName: 'friend' });
 
   Friend.prototype.sendBirthdayNotification = async function () {
@@ -35,6 +41,7 @@ module.exports = sequelize => {
     console.log(`Sending birthday notification to ${friend.email}`)
 
     sendBirthdayEmailToFriend(friend)
+    // ... here can be SMS as well, can use Twilio
     
     const currentYear = (new Date()).getFullYear()
 

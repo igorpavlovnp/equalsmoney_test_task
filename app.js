@@ -25,7 +25,8 @@ const exportFriends = async () => {
         first_name: friendJSON.first_name,
         email: friendJSON.email,
         month_of_birth: dateOfBirth.getMonth(),
-        day_of_birth: dateOfBirth.getDate()
+        day_of_birth: dateOfBirth.getDate(),
+        phone_number: friendJSON.phone_number || null,
       })
     } catch (error) {
       const duplicateFriendExportAttempted = error?.errors?.[0]?.message === 'email must be unique'
