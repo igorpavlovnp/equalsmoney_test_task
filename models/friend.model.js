@@ -7,10 +7,6 @@ module.exports = sequelize => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    last_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -19,14 +15,30 @@ module.exports = sequelize => {
         is: /^\S+@\S+\.\S+$/i
       }
     },
-    date_of_birth: {
-      type: DataTypes.DATE,
+    month_of_birth: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    day_of_birth: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     notification_sent_for_year: {
       type: DataTypes.INTEGER,
     },
   }, { sequelize, modelName: 'friend' });
+
+  Friend.prototype.sendBirthdayNotification = async function () {
+    console.log(`Sending birthday notification to ${this.email}`)
+
+    // ... send via Postmark
+    
+    const currentYear = (new Date()).getFullYear()
+
+    await this.update({
+      notification_sent_for_year: currentYear
+    })
+  }
 
   return Friend
 }

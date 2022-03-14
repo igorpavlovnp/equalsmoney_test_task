@@ -1,5 +1,6 @@
 const csvtojson = require("csvtojson");
-const { Sequelize } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
+const cron = require('node-cron');
 
 require('dotenv').config()
 
@@ -18,7 +19,14 @@ const exportFriends = async () => {
   
   for (const friendJSON of friendsJSON) {
     try {
-      await Friend.create(friendJSON)
+      const dateOfBirth = new Date(friendJSON.date_of_birth)
+
+      await Friend.create({
+        first_name: friendJSON.first_name,
+        email: friendJSON.email,
+        month_of_birth: dateOfBirth.getMonth(),
+        day_of_birth: dateOfBirth.getDate()
+      })
     } catch (error) {
       const duplicateFriendExportAttempted = error?.errors?.[0]?.message === 'email must be unique'
       
@@ -33,7 +41,33 @@ const exportFriends = async () => {
   }
 }
 
+const sendBirthdayNotifications = async () => {
+  const dateNow = new Date()
+  const friendsToSendNotificationsTo = await Friend.findAll({
+    where: {
+      day_of_birth: dateNow.getDate(),
+      month_of_birth: dateNow.getMonth(),
+      notification_sent_for_year: {
+        [Op.or]: {
+          [Op.eq]: null,
+          [Op.lt]: dateNow.getFullYear()
+        }
+      }
+    }
+  })
+
+  for (const friendToSendNotificationsTo of friendsToSendNotificationsTo) {
+    friendToSendNotificationsTo.sendBirthdayNotification()
+  }
+}
+
+const launchBirthdayNotificationScheduler = () => {
+  cron.schedule('0 16 * * *', () => sendBirthdayNotifications())
+}
+  
+
 (async () => {
   await initDb()
   await exportFriends()
+  launchBirthdayNotificationScheduler()
 })()
